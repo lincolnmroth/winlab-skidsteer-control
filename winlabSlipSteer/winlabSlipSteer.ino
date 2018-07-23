@@ -70,8 +70,8 @@ void driveLeft(int speed){
   //spin left motor at speed, -255 is full reverse, 0 is not moving, and 255 is full forward
   Serial.print("Left speed:");
   Serial.println(speed);
-  leftMotor1->setSpeed(speed);
-  leftMotor2->setSpeed(speed);
+  leftMotor1->setSpeed(abs(speed));
+  leftMotor2->setSpeed(abs(speed));
   if (speed > 0){
     leftMotor1->run(FORWARD);
     leftMotor2->run(FORWARD);
@@ -91,8 +91,8 @@ void driveRight(int speed){
   Serial.print("Right speed:");
   Serial.println(speed);
   //spin left motor at speed, -255 is full reverse, 0 is not moving, and 255 is full forward
-  rightMotor1->setSpeed(speed);
-  rightMotor2->setSpeed(speed);
+  rightMotor1->setSpeed(abs(speed));
+  rightMotor2->setSpeed(abs(speed));
   if (speed > 0){
     rightMotor1->run(FORWARD);
     rightMotor2->run(FORWARD);
