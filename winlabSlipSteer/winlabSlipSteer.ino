@@ -2,8 +2,11 @@
 
 Adafruit_MotorShield ms = Adafruit_MotorShield(); 
 
-Adafruit_DCMotor *leftMotor = ms.getMotor(1);
-Adafruit_DCMotor *rightMotor = ms.getMotor(2);
+Adafruit_DCMotor *leftMotor1 = ms.getMotor(1);
+Adafruit_DCMotor *leftMotor2 = ms.getMotor(2);
+Adafruit_DCMotor *rightMotor1 = ms.getMotor(3);
+Adafruit_DCMotor *rightMotor2 = ms.getMotor(4);
+
 
 String inputString = "";         // a String to hold incoming data
 boolean stringComplete = false;  // whether the string is complete
@@ -28,10 +31,13 @@ void loop() {
       //Takes inputString (which is the drivespeed and turnvalue separated by a colon) and splits it into it's values, also the values should be from -255 to 255
       int driveSpeed = inputString.substring(0, inputString.indexOf(':')).toInt();
       int turnValue = inputString.substring(inputString.indexOf(':') + 1).toInt();
-  
+      Serial.print("Drive speed is ");
+      Serial.print(driveSpeed);
+      Serial.print("    turnValue is ");
+      Serial.println(turnValue);
       //takes driveSpeed and turnValue and make them motor speeds (-255 to 255, where 0 is not moving, 255 is full forward and 255 is full back)f
-      int leftMotorSpeed = constrain(turnValue + driveSpeed, -255, 255);
-      int rightMotorSpeed = constrain(turnValue - driveSpeed, -255, 255);
+      int leftMotorSpeed = constrain(driveSpeed + turnValue, -255, 255);
+      int rightMotorSpeed = constrain(driveSpeed - turnValue, -255, 255);
   
       //set the motor speed
       driveLeft(leftMotorSpeed);
@@ -62,25 +68,37 @@ void serialEvent() {
 
 void driveLeft(int speed){
   //spin left motor at speed, -255 is full reverse, 0 is not moving, and 255 is full forward
-  leftMotor->setSpeed(speed);
+  Serial.print("Left speed:");
+  Serial.println(speed);
+  leftMotor1->setSpeed(speed);
+  leftMotor2->setSpeed(speed);
   if (speed > 0){
-    leftMotor->run(FORWARD);
+    leftMotor1->run(FORWARD);
+    leftMotor2->run(FORWARD);
   } else {
-    leftMotor->run(BACKWARD);
+    leftMotor1->run(BACKWARD);
+    leftMotor2->run(BACKWARD);
   }
 }
 void releaseMotors(){
-  leftMotor->run(RELEASE);
-  rightMotor->run(RELEASE);
+  leftMotor1->run(RELEASE);
+  rightMotor1->run(RELEASE);
+  leftMotor2->run(RELEASE);
+  rightMotor2->run(RELEASE);
 }
 
 void driveRight(int speed){
+  Serial.print("Right speed:");
+  Serial.println(speed);
   //spin left motor at speed, -255 is full reverse, 0 is not moving, and 255 is full forward
-  rightMotor->setSpeed(speed);
+  rightMotor1->setSpeed(speed);
+  rightMotor2->setSpeed(speed);
   if (speed > 0){
-    rightMotor->run(FORWARD);
+    rightMotor1->run(FORWARD);
+    rightMotor2->run(FORWARD);
   } else {
-    rightMotor->run(BACKWARD);
+    rightMotor1->run(BACKWARD);
+    rightMotor2->run(BACKWARD);
   }
 }
 

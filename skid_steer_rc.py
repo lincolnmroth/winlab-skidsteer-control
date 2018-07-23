@@ -28,21 +28,22 @@ def send(speed, dir):
     out = 'Speed:' + str(speed) + ' Dir:' + str(dir)
     scr.addstr(out)
     scr.addstr('\t')
-    port.write((speed + ':' + dir + '\n').encode())
+    port.write((str(speed) + ':' + str(dir) + '\n').encode())
     port.flush()
 
 def main():
     global port, scr
     port = None
     for p in serial.tools.list_ports.comports():
-        if p.description == 'Arduino Uno':
+        print(p.description)
+        if p.description == 'ttyACM0':
             print('Found arduino')
             port = serial.Serial(p.device)
 
     if port == None:
         print('Could not connect to Arduino')
         sys.exit(1)
-    atexit.register(curses.endwin)
+
     scr = curses.initscr()
     curses.cbreak()
     curses.setsyx(-1, -1)
