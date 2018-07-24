@@ -26,8 +26,6 @@ scr = None
 
 def send(speed, dir):
     out = 'Speed:' + str(speed) + ' Dir:' + str(dir)
-    scr.addstr(out)
-    scr.addstr('\t')
     port.write((str(speed) + ':' + str(dir) + '\n').encode())
     port.flush()
 
@@ -36,7 +34,7 @@ def main():
     port = None
     for p in serial.tools.list_ports.comports():
         print(p.description)
-        if p.description == 'ttyACM0':
+        if p.description == 'ttyACM1':
             print('Found arduino')
             port = serial.Serial(p.device)
 
@@ -47,6 +45,7 @@ def main():
     scr = curses.initscr()
     curses.cbreak()
     curses.setsyx(-1, -1)
+    curses.noecho()
     scr.keypad(1)
     scr.addstr(0, 10, 'Skid-steer robot controller')
     scr.addstr(2, 10, 'Press Q to exit.')
