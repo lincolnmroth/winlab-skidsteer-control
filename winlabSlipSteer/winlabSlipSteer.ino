@@ -13,7 +13,7 @@ boolean stringComplete = false;  // whether the string is complete
 
 void setup() {
   // initialize serial:
-  Serial.begin(115200);
+  Serial.begin(576000);
   Serial.setTimeout(100);
   ms.begin();
   // reserve 200 bytes for the inputString:

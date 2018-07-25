@@ -35,28 +35,18 @@ analog_names={0:'js1-x',
 
 
 def send(speed, dir):
+    global port
     out = 'Speed:' + str(speed) + ' Dir:' + str(dir)
     print(out)
-    port.write((str(speed) + ':' + str(dir) + '\n').encode())
-
-def commands_out_process(stop_ev, js_out, commands_out_sock):
-    #thread for outputting commands
-    global command_lock
     try:
-        while not stop_ev.isSet():
-            evbuf=js_out.read(8)
-            if evbuf:
-                time, value, in_type, in_id=struct.unpack('IhBB', evbuf)
-                print(in_type, in_id)
-                command_lock.acquire()
-                send_stuff(commands_out_sock, evbuf)
-                command_lock.release()
-                if in_type==1 and button_names[in_id]=='xbox' and value==1:
-                    stop_event.set()
-    except BrokenPipeError:
-        print("command connection broken, server no longer recieving")
-        print(datetime.datetime.now().strftime(time_format))
-        stop_ev.set()
+        port.write((str(speed) + ':' + str(dir) + '\n').encode())
+    except (serial.serialutil.SerialException):
+        print("error, reconnecting")
+        for p in serial.tools.list_ports.comports():
+            print(p.description)
+            if 'ttyACM' in p.description:
+                print('Found arduino')
+                port = serial.Serial(p.device, baudrate=576000)
 
 
 def map(x, in_min, in_max, out_min, out_max):
@@ -69,20 +59,34 @@ def send_stuff(in_type, in_id, value):
         if in_id == 2:
             dir = map(value, -32767, 32767, -255, 255)
             send(speed, dir)
+            send(speed, dir)
         elif in_id == 3:
             speed = map(value, 32767, -32767, -255, 255)
+            send(speed, dir)
             send(speed, dir)
     elif in_type == 1:
         if in_id == 0:
             send(0,0)
             send(0,0)
 
+def keep_sending():
+
+    while True:
+        global sending_lock
+        sending_lock.acquire()
+        global speed, dir
+        send(speed, dir)
+        # print('threadedd', speed, dir)
+        sending_lock.release()
+        time.sleep(0.05)
+
+
 port = None
 for p in serial.tools.list_ports.comports():
     print(p.description)
-    if p.description == 'ttyACM0':
+    if 'ttyACM' in p.description:
         print('Found arduino')
-        port = serial.Serial(p.device, baudrate=115200)
+        port = serial.Serial(p.device, baudrate=576000)
 
 if port == None:
     print('Could not connect to Arduino')
@@ -91,8 +95,12 @@ if port == None:
 joystick_file='/dev/input/js0'
 js_out=open(joystick_file, 'rb')
 print(js_out)
-
-
+#
+sending_lock = threading.Lock()
+out_stream = threading.Thread(target=keep_sending)
+out_stream.setDaemon(True)
+out_stream.start()
+print('howdy')
 try:
     while not False:
         evbuf=js_out.read(8)
