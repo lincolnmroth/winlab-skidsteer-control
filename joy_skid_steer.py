@@ -100,7 +100,6 @@ sending_lock = threading.Lock()
 out_stream = threading.Thread(target=keep_sending)
 out_stream.setDaemon(True)
 out_stream.start()
-print('howdy')
 try:
     while not False:
         evbuf=js_out.read(8)
