@@ -25,12 +25,14 @@ def send(speed, dir):
     try:
         port.write((str(speed) + ':' + str(dir) + '\n').encode())
     except (serial.serialutil.SerialException):
+        time.sleep(.1)
         print("error, reconnecting")
         for p in serial.tools.list_ports.comports():
             print(p.description)
             if 'ttyACM' in p.description:
                 print('Found arduino')
                 port = serial.Serial(p.device, baudrate=576000)
+        time.sleep(.1)
 
 
 def map(x, in_min, in_max, out_min, out_max):
