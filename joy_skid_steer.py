@@ -1,4 +1,3 @@
-import atexit
 import time
 import serial
 import serial.tools.list_ports
@@ -8,30 +7,15 @@ import threading
 import socket
 
 port = None
+global port
 global command_lock
 global stop_eventt
 global client_socket_commands
+global dir
+global speed
 dir = 0
 speed = 0
-global port
-button_names={ 0:'A',
-        1:'B',
-        2:'X',
-        3:'Y',
-        4:'LB',
-        5:'RB',
-        6:'screen',
-        7:'menu',
-        8:'xbox' }
 
-analog_names={0:'js1-x',
-        1:'js1-y',
-        2:'LT',
-        3:'js2-x',
-        4:'js2-y',
-        5:'RT',
-        6:'DPad-x',
-        7:'DPad-y'}
 
 
 def send(speed, dir):
@@ -76,7 +60,6 @@ def keep_sending():
         sending_lock.acquire()
         global speed, dir
         send(speed, dir)
-        # print('threadedd', speed, dir)
         sending_lock.release()
         time.sleep(0.05)
 
@@ -94,11 +77,10 @@ if port == None:
 
 joystick_file='/dev/input/js0'
 js_out=open(joystick_file, 'rb')
-print(js_out)
-#
+
 sending_lock = threading.Lock()
 out_stream = threading.Thread(target=keep_sending)
-out_stream.setDaemon(True)
+# out_stream.setDaemon(True)
 out_stream.start()
 try:
     while not False:
@@ -112,8 +94,3 @@ except BrokenPipeError:
     print("command connection broken, server no longer recieving")
     print(datetime.datetime.now().strftime(time_format))
     stop_ev.set()
-    #
-    # dir = 0
-    # speed = 0
-    #
-    #
