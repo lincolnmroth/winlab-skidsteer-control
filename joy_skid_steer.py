@@ -44,16 +44,11 @@ def send_stuff(in_type, in_id, value):
     if in_type == 2:
         if in_id == 2:
             dir = map(value, -32767, 32767, -255, 255)
-            send(speed, dir)
-            send(speed, dir)
         elif in_id == 3:
             speed = map(value, 32767, -32767, -255, 255)
-            send(speed, dir)
-            send(speed, dir)
     elif in_type == 1:
         if in_id == 0:
-            send(0,0)
-            send(0,0)
+            speed, dir = 0
 
 def keep_sending():
 
